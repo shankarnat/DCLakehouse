@@ -161,17 +161,72 @@ This is a ONE-TIME processing cost (not monthly)
 ---
 
 ## Data Cloud Queries
-- **Query processing**: Uses credits based on compute resources and data scanned
-- **Data Cloud Query API**: Credits consumed based on query complexity
-- **SQL queries via Data Cloud API**: Variable credit consumption
-- Queries used for segmentation, insights, and data exploration
-- More complex queries = more credits consumed
+
+### Estimated Query Costs
+- **Simple queries** (single table, basic filters): ~50-200 credits per 1M rows scanned
+- **Medium queries** (joins, aggregations): ~200-1,000 credits per 1M rows scanned
+- **Complex queries** (multiple joins, complex aggregations, window functions): ~1,000-5,000 credits per 1M rows scanned
+- **Very complex queries** (nested queries, heavy computation): ~5,000-10,000+ credits per 1M rows scanned
 
 **Query Credit Consumption Factors:**
 - Volume of data scanned
 - Query complexity (joins, aggregations, filters)
 - Compute resources required
 - Result set size
+- Number of columns selected
+- Use of indexes and partitions
+
+### Query Cost Examples
+
+**Example 1: Simple segmentation query**
+```
+Query: SELECT * FROM customers WHERE state = 'CA'
+Data scanned: 10M rows
+Estimated credits: 10M × (100 credits / 1M) = 1,000 credits
+Cost: 1,000 × $0.005 = $5
+```
+
+**Example 2: Medium complexity query with JOIN**
+```
+Query: SELECT c.*, o.total_spend
+       FROM customers c
+       JOIN orders o ON c.id = o.customer_id
+       WHERE o.order_date > '2024-01-01'
+Data scanned: 50M rows across both tables
+Estimated credits: 50M × (500 credits / 1M) = 25,000 credits
+Cost: 25,000 × $0.005 = $125
+```
+
+**Example 3: Complex analytics query**
+```
+Query: SELECT customer_id,
+              AVG(order_value) OVER (PARTITION BY region),
+              SUM(lifetime_value)
+       FROM customer_analytics
+       WHERE last_purchase_date > DATE_SUB(CURRENT_DATE, 90)
+       GROUP BY customer_id, region
+Data scanned: 100M rows
+Estimated credits: 100M × (2,000 credits / 1M) = 200,000 credits
+Cost: 200,000 × $0.005 = $1,000
+```
+
+**Example 4: Daily dashboard queries (30 days)**
+```
+Daily query mix:
+- 5 simple queries: 5 × 1,000 credits × 30 days = 150,000 credits
+- 3 medium queries: 3 × 25,000 credits × 30 days = 2,250,000 credits
+- 1 complex query: 1 × 200,000 credits × 30 days = 6,000,000 credits
+Monthly total: 8,400,000 credits
+Monthly cost: 8,400,000 × $0.005 = $42,000
+```
+
+**Query Optimization Tips:**
+- Use `WHERE` clauses to limit rows scanned
+- Select only needed columns (avoid `SELECT *`)
+- Leverage materialized views and calculated insights
+- Use proper indexing and partitioning
+- Cache frequently used query results
+- Batch similar queries together
 
 ---
 
@@ -191,9 +246,11 @@ This is a ONE-TIME processing cost (not monthly)
 | **Unstructured Processing** | Can be very expensive for large document sets |
 | **Salesforce-Native Data** | Ingestion is now FREE (as of Sept 2025) |
 | **Unified Credits** | Use credits for any operation across all meters |
-| **Query Costs** | Variable based on data scanned and complexity |
+| **Query Costs** | Simple queries: 50-200 credits/1M rows; Complex: 5K-10K+ credits/1M rows |
+| **Query Optimization Matters** | Unoptimized queries can consume as much as identity resolution |
 | **Edition Choice Matters** | Starter (250K/mo) vs Enterprise (5M/mo) = 20x difference |
 | **Credit Overage** | Purchase additional packs at $0.005/credit when needed |
+| **Daily Dashboards** | Can consume millions of credits/month if not optimized |
 
 ---
 
@@ -219,12 +276,14 @@ This is a ONE-TIME processing cost (not monthly)
 | Ingestion | Salesforce Sources | **FREE** | - |
 | Identity Resolution | Processing | 100,000 credits | per 1M rows |
 | Calculated Insights | Processing | 15 credits | per 1M rows |
-| Segmentation | Query Processing | Variable | by complexity |
+| Segmentation | Query Processing | 50-10,000+ credits | per 1M rows scanned |
 | Activation | Batch | 10 credits | per 1M rows |
 | Activation | Real-time Streaming | 1,600 credits | per 1M rows |
 | Unstructured | AI/Vector Processing | 60 credits | per 1 MB |
-| Queries | Data Cloud Query API | Variable | by data scanned & complexity |
-| Queries | SQL via API | Variable | by compute & result size |
+| Queries | Simple (basic filters) | 50-200 credits | per 1M rows scanned |
+| Queries | Medium (joins, aggregations) | 200-1,000 credits | per 1M rows scanned |
+| Queries | Complex (window functions) | 1,000-5,000 credits | per 1M rows scanned |
+| Queries | Very Complex (nested, heavy compute) | 5,000-10,000+ credits | per 1M rows scanned |
 
 ---
 

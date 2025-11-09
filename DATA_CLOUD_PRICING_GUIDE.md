@@ -2,7 +2,7 @@
 
 ## Table of Contents
 1. [Pricing Overview](#overview)
-2. [The Five Key Meters](#meters)
+2. [The Six Key Meters](#meters)
 3. [Real-World Analogies](#analogies)
 4. [Pricing Calculator Examples](#calculator)
 5. [Cost Optimization Strategies](#optimization)
@@ -61,7 +61,7 @@ Data Cloud Consumption Model:
 
 ---
 
-## The Five Key Meters {#meters}
+## The Six Key Meters {#meters}
 
 ### 1. Data Storage 💾
 
@@ -474,6 +474,201 @@ Alternative: Profile Reduction Strategy
 
 ---
 
+### 6. Unstructured Data Storage 📎
+
+**What it measures**: Storage for unstructured data like images, PDFs, documents, videos, audio files
+
+**Unit**: Gigabytes (GB) or Terabytes (TB)
+
+**Typical Pricing**: ~$0.25 - $0.40 per GB per month (higher than structured storage)
+
+#### How It Works
+
+```
+Unstructured Data Storage = Storing non-tabular data
+
+What Counts as Unstructured:
+├── Images (JPG, PNG, GIF, etc.)
+├── Documents (PDF, Word, Excel)
+├── Videos (MP4, AVI, MOV)
+├── Audio files (MP3, WAV)
+├── Email attachments
+├── Medical imaging (DICOM, X-rays, MRIs)
+└── Any binary/blob data
+
+Why Separate from Regular Storage?
+├── Different storage technology (object storage vs. columnar)
+├── No indexing/query optimization needed
+├── Accessed less frequently (retrieval-based)
+└── Often requires CDN/serving infrastructure
+```
+
+#### Storage Tiers
+
+```
+Unstructured storage often has tiers:
+
+Hot Storage (Frequently Accessed):
+├── Price: ~$0.40/GB/month
+├── Use: Product images, profile photos
+├── Fast retrieval (milliseconds)
+└── Best for: Active content
+
+Cold Storage (Infrequently Accessed):
+├── Price: ~$0.15/GB/month
+├── Use: Historical documents, archives
+├── Slower retrieval (seconds to minutes)
+└── Best for: Compliance, audit trails
+
+Archive Storage (Rarely Accessed):
+├── Price: ~$0.05/GB/month
+├── Use: Long-term retention
+├── Very slow retrieval (hours)
+└── Best for: Legal hold, regulatory requirements
+```
+
+#### Real-World Example
+
+**Customer: HealthCare Provider (Medical Records)**
+
+```
+Unstructured Data Profile:
+├── Patient photos/IDs: 2 million × 500 KB = 1 TB
+├── Medical imaging (X-rays, MRIs): 100,000 × 50 MB = 5 TB
+├── Lab reports (PDFs): 5 million × 200 KB = 1 TB
+├── Consent forms (scanned): 2 million × 1 MB = 2 TB
+├── Audio recordings (telemedicine): 500,000 × 10 MB = 5 TB
+└── Total Unstructured: 14 TB
+
+Storage Strategy:
+├── Hot Storage (active patients - last 2 years):
+│   ├── 4 TB × $0.40/GB × 12 months
+│   ├── 4,000 GB × $0.40 × 12 = $19,200/year
+│
+├── Cold Storage (inactive patients - 3-7 years):
+│   ├── 6 TB × $0.15/GB × 12 months
+│   ├── 6,000 GB × $0.15 × 12 = $10,800/year
+│
+└── Archive (compliance - 7+ years):
+    ├── 4 TB × $0.05/GB × 12 months
+    ├── 4,000 GB × $0.05 × 12 = $2,400/year
+
+Total Unstructured Storage Cost: $32,400/year
+
+Compare to Structured Data:
+├── Patient records (structured): 100 GB
+├── Cost: 100 GB × $0.20 × 12 = $240/year
+└── Unstructured is 135x more expensive (but necessary!)
+```
+
+#### Real-World Example 2
+
+**Customer: E-commerce Company (Product Catalog)**
+
+```
+Unstructured Data:
+├── Product images (primary): 100,000 products × 500 KB = 50 GB
+├── Product images (variants/angles): 100,000 × 5 × 300 KB = 150 GB
+├── Product videos: 10,000 × 20 MB = 200 GB
+├── User-generated content (reviews): 1 million × 100 KB = 100 GB
+├── Product manuals (PDFs): 50,000 × 2 MB = 100 GB
+└── Total: 600 GB
+
+Storage:
+├── 600 GB × $0.35/GB × 12 months = $2,520/year
+
+Additional Costs:
+├── CDN delivery for images/videos: $500/month = $6,000/year
+├── Image optimization/compression: $200/month = $2,400/year
+└── Total Unstructured Ecosystem: $10,920/year
+
+Optimization:
+├── Use external CDN (Cloudflare, Akamai) for delivery
+├── Store only master images in Data Cloud
+├── Reference URLs instead of storing duplicates
+└── Optimized cost: $1,500/year (saved $9,420!)
+```
+
+#### When to Use Unstructured Storage in Data Cloud
+
+```
+Good Use Cases:
+├── Customer profile photos (linked to Individual)
+├── Contract documents (linked to Account)
+├── Case attachments (linked to Service Cases)
+├── Product images (linked to Product DMO)
+└── Compliance documents with metadata
+
+Poor Use Cases (Use external storage instead):
+├── Website content delivery (use CDN)
+├── Large video streaming (use Vimeo, Wistok, YouTube)
+├── App assets (use S3/CloudFront directly)
+└── Archival storage only (use Glacier, Azure Archive)
+
+Why?
+└── Data Cloud unstructured storage is for LINKING data to entities
+    Use external storage for pure content delivery
+```
+
+#### Best Practices
+
+```
+1. Store References, Not Files (When Possible)
+   ├── Bad: Store 5 GB video in Data Cloud
+   ├── Good: Store video in S3, store S3 URL in Data Cloud
+   └── Link URL to customer/product record
+
+2. Lifecycle Policies
+   ├── Automatically move to cold storage after 90 days
+   ├── Archive after 1 year
+   └── Delete after retention period
+
+3. Compression
+   ├── Compress images before upload
+   ├── Use modern formats (WebP, AVIF for images)
+   └── Can reduce storage by 40-60%
+
+4. Deduplication
+   ├── Same file uploaded multiple times
+   ├── Store once, reference many times
+   └── Can reduce storage by 20-40%
+```
+
+#### Memory Aid
+
+**Analogy**: Unstructured Storage is like **renting a storage unit for bulky items**
+- Regular storage (structured) = Filing cabinet (organized, searchable)
+- Unstructured storage = Storage unit (boxes of stuff, harder to search)
+- Costs more per square foot than a filing cabinet
+- Use for things that don't fit in normal files (photos, videos)
+- Best practice: Store only what you need to access frequently
+
+#### Pricing Comparison
+
+```
+Storage Type Cost Comparison (per GB/month):
+
+Structured Data (DLOs/DMOs):     $0.20
+Unstructured (Hot):              $0.40  (2x more)
+Unstructured (Cold):             $0.15  (0.75x)
+Unstructured (Archive):          $0.05  (0.25x)
+
+External Alternatives:
+├── AWS S3 Standard:             $0.023 (10x cheaper!)
+├── AWS S3 Glacier:              $0.004 (50x cheaper!)
+├── Azure Blob Storage:          $0.018 (11x cheaper!)
+└── Google Cloud Storage:        $0.020 (10x cheaper!)
+
+Key Decision:
+├── Use Data Cloud unstructured storage if:
+│   └── You need tight integration with DMOs (link to customer/product)
+│
+└── Use external storage (S3, Azure) if:
+    └── Pure archival or content delivery (no DMO integration needed)
+```
+
+---
+
 ## Real-World Analogies {#analogies}
 
 ### The "Running a Restaurant" Analogy
@@ -508,6 +703,12 @@ Alternative: Profile Reduction Strategy
 │  ├── Pay to maintain customer profiles                  │
 │  ├── Merge duplicate accounts (same person, 2 emails)   │
 │  └── More loyal customers tracked = higher cost         │
+│                                                         │
+│  Unstructured Storage = Walk-in Freezer/Cold Storage    │
+│  ├── Pay premium for specialized storage (photos, docs) │
+│  ├── Hot storage = Front refrigerator (expensive, fast) │
+│  ├── Cold storage = Back freezer (cheaper, slower)      │
+│  └── Archive = Off-site warehouse (cheapest, slowest)   │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -825,13 +1026,14 @@ Strategy: Match Rule Optimization
 
 ```
 You: "Data Cloud pricing is based on consumption, similar to your AWS
-     or Azure bill. You pay for what you use across five key areas:
+     or Azure bill. You pay for what you use across six key areas:
 
-     1️⃣ STORAGE - like renting warehouse space for your data
-     2️⃣ INGESTION - like shipping charges to receive data
-     3️⃣ COMPUTE - like electricity to process your segments
-     4️⃣ ACTIVATION - like postage to send data to ad platforms
-     5️⃣ IDENTITY - maintaining unified customer profiles
+     1️⃣ STRUCTURED STORAGE - like renting warehouse space for your data
+     2️⃣ UNSTRUCTURED STORAGE - for images, PDFs, documents (2x cost)
+     3️⃣ INGESTION - like shipping charges to receive data
+     4️⃣ COMPUTE - like electricity to process your segments
+     5️⃣ ACTIVATION - like postage to send data to ad platforms
+     6️⃣ IDENTITY - maintaining unified customer profiles
 
      Most customers find that ACTIVATION is their biggest cost driver,
      especially if they're refreshing audiences to ad platforms frequently.
@@ -990,7 +1192,8 @@ You: "Let me show you the business impact:
 ### Remember the Pricing Meters
 
 ```
-🗄️  STORAGE = Warehouse rent (monthly)
+🗄️  STRUCTURED STORAGE = Warehouse rent (monthly)
+📎  UNSTRUCTURED STORAGE = Storage unit for bulky items (2x cost)
 📥  INGESTION = Shipping charges (per delivery)
 ⚙️  COMPUTE = Electricity bill (usage-based)
 🚀  ACTIVATION = Postage (per piece sent)
@@ -1054,7 +1257,8 @@ You: "Let me show you the business impact:
 │         DATA CLOUD PRICING CHEAT SHEET                 │
 ├────────────────────────────────────────────────────────┤
 │                                                        │
-│  💾 Storage: ~$0.20/GB/month                          │
+│  💾 Structured Storage: ~$0.20/GB/month               │
+│  📎 Unstructured Storage: ~$0.35/GB/month (hot)       │
 │  📥 Ingestion: ~$0.08/GB                              │
 │  ⚙️ Compute: ~$1.00/hour                              │
 │  🚀 Activation: ~$0.005/activation                    │
@@ -1068,6 +1272,7 @@ You: "Let me show you the business impact:
 │  ├── Hourly activations to ad platforms               │
 │  ├── Full refresh instead of incremental              │
 │  ├── Storing all raw events instead of insights       │
+│  ├── Storing large files in Data Cloud (use S3)       │
 │  └── Profiles for anonymous/unidentified users        │
 │                                                        │
 └────────────────────────────────────────────────────────┘
